@@ -78,8 +78,10 @@
       this.state = {}
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
+      this.selectWine = this.selectWine.bind(this);
+      this.editWine = this.editWine.bind(this);
+      this.submitEditedWine = this.submitEditedWine.bind(this);
     }
-
     async getWines() {
       try {
         const res = await axios.get(WINES_URL);
@@ -88,18 +90,15 @@
         console.error(e);
       }
     }
-
     componentDidMount() {
       this.getWines();
     }
-
     handleChange(e) {
       const { name, value } = e.target;
       // e.target.name
       // e.target.value
       this.setState({ [name]: value })
     }
-
     async handleSubmit(e) {
       e.preventDefault();
       // this.state.name
@@ -116,13 +115,37 @@
         console.error(e.message);
       }
     }
-    async handleDelete(ev) {
-      const  wineid  = ev.target;
+    async handleDelete(id) {
+      console.log(WINES_URL + id);
       try {
-        const res = await axios.delete(WINES_URL + '/' + wineid); // target wine id
-        console.log(res.data)
+        const res = await axios.delete(WINES_URL + id); // target wine id
+        console.log(res.data);
+        const updateRes = await axios.get(WINES_URL);
+        this.setState({ wines: updateRes.data });
       } catch(e) {
-        console.error(e.message)
+        console.error(e.message);
+      }
+    }
+    selectWine(selectedWine) {
+      this.setState({ selectedWine });
+      // { selectedWine: selectedWine }
+    }
+    editWine(e) {
+      const { name, value } = e.target;
+      this.setState({ ...this.state, selectedWine: { ...this.state.selectedWine, [name]: value } })
+    }
+    async submitEditedWine(e) {
+      e.preventDefault();
+      try {
+        const editedWine = this.state.selectedWine; // this obj has an id
+        console.log(editedWine)
+        // to send our patch to url + /:id
+        const focusWine = WINES_URL + editedWine.id
+        const res = await axios.patch(focusWine, editedWine);
+        const resRefresh = await axios.get(WINES_URL);
+        this.setState({ wines: resRefresh.data });
+      } catch(e) {
+        console.error(e);
       }
     }
     render() {
@@ -131,7 +154,14 @@
           <ul>
             {/* render info */}
             {
-              this.state.wines && this.state.wines.map(wine => <li>{ wine.name }: price { wine.price } <button>Delete wine</button></li>)
+              this.state.wines && this.state.wines.map(wine => (
+                <li key={ wine.id }>
+                  { wine.name }: price { wine.price } 
+                  <button onClick={ () => this.handleDelete(wine.id) }>Delete wine</button>
+                  <button onClick={ () => this.selectWine(wine) }>Edit wine</button>
+                  <button>useless</button>
+                </li>
+              ))
             }
           </ul>
           <form className="new-wine-form"
@@ -171,10 +201,56 @@
             </label>
             <input type="submit" />
           </form>
+          <hr></hr>
+          {/* we want to show the form */}
+          {/* only after we select a wine */}
+          {/* if this.state.selectedWine exists */}
+          {/* render this form below */}
+          {/* this.state.selectedWine && formBelow */}
+          {
+            this.state.selectedWine && <form className="wine-edit-form"
+              onChange={ this.editWine }
+              onSubmit={ this.submitEditedWine }>
+              <label>
+                Wine name:
+                <input type="text" name="name" defaultValue={ this.state.selectedWine.name } />
+              </label>
+              <label>
+                Year wine was made:
+                <input type="text" name="year" defaultValue={ this.state.selectedWine.year } />
+              </label>
+              <label>
+                Grapes used:
+                <input type="text" name="grapes" defaultValue={ this.state.selectedWine.grapes } />
+              </label>
+              <label>
+                Country of wine:
+                <input type="text" name="country" defaultValue={ this.state.selectedWine.country } />
+              </label>
+              <label>
+                Wine region:
+                <input type="text" name="region" defaultValue={ this.state.selectedWine.region } />
+              </label>
+              <label>
+                Description of wine:
+                <input type="text" name="description" defaultValue={ this.state.selectedWine.description } />
+              </label>
+              <label>
+                Picture url:
+                <input type="text" name="picture" defaultValue={ this.state.selectedWine.picture } />
+              </label>
+              <label>
+                Price:
+                <input type="text" name="price" defaultValue={ this.state.selectedWine.price } />
+              </label>
+              <input type="submit" />
+            </form>
+          }
         </div>
       )
     }
   }
+  
 
   class Books extends React.Component {
     constructor(props) {
@@ -206,9 +282,7 @@
 
     async handleBookSubmit(e) {
       e.preventDefault();
-      // this.state.name
-      // this.state.year
-      // this.state.grapes
+     
       const { title, author, releaseDate, image } = this.state;
       const book = { title, author, releaseDate, image };
       try {
@@ -295,9 +369,7 @@
 
     async handlePeopleSubmit(e) {
       e.preventDefault();
-      // this.state.name
-      // this.state.year
-      // this.state.grapes
+
       const { firstname, lastname, email, username } = this.state;
       const person = { firstname, lastname, email, username };
       try {

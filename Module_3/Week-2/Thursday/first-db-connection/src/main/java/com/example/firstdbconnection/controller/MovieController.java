@@ -11,8 +11,11 @@ public class MovieController {
         return "this will eventually return all the movies";
     }
 
-    @PostMapping
-    public String createMovie(@RequestBody String movie) {
-        return movie;
+    @GetMapping("/{id}")
+
+    @PostMapping("/{title}")
+    //
+    public String createMovie(@RequestParam String title) {
+        return title;
     }
 }

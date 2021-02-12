@@ -15,5 +15,25 @@ public class Gpa {
     private Long id;
 
     @Column // 3.5 // 1.0 // x.x
+    private float gpa;
+
+    public Gpa() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public float getGpa() {
+        return gpa;
+    }
+
+    public void setGpa(float gpa) {
+        this.gpa = gpa;
+    }
 }
 

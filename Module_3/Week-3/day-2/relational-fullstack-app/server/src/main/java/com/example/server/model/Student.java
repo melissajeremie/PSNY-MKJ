@@ -1,5 +1,6 @@
 package com.example.server.model;
 
+import com.example.server.model.Gpa;
 import javax.persistence.*;
 
 @Entity

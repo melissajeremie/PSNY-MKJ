@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Student from './Student'
+import './Student.scss';
 
 
 function Students() {
@@ -70,9 +72,14 @@ function Students() {
 
     return(
         <div>
+            { students && students.map(student => <Student student={ student } selectStudent={ selectStudent } deleteStudent={ deleteStudent } />) }
+
             <div>
                 <h2>Enroll a new student below:</h2>
-                <form className="enroll-student-form" onChange={(e) => handleChange(e) }>
+                <form 
+                className="enroll-student-form" 
+                onChange={ (e) => handleChange(e) }
+                onSubmit={ (e) => handleSubmit(e) }>
                     <label>
                         First Name:
                         <input type="text" name="firstName" />
@@ -93,11 +100,40 @@ function Students() {
                         School Name:
                         <input type="text" name="schoolName" />
                     </label>
-
                     <input type="submit" value="Enroll student" className="button success" />
-
                 </form>
+
+                { selectedStudent && <form
+                onChange={ (e) => handleEditChange(e) }
+                onSubmit={ (e) => handleEditSubmit(e) }>
+                    <label>
+                        First Name:
+                        <input type="text" name="firstName" defaultValue={ selectedStudent.firstName } />
+                    </label>
+
+                    <label>
+                        Last Name:
+                        <input type="text" name="lastName" defaultValue={ selectedStudent.lastName } />
+                    </label>
+
+                    <label>
+                        Age:
+                        <input type="text" name="age" defaultValue={ selectedStudent.age } />
+                    </label>
+
+                    <label>
+                        Grade:
+                        <input type="text" name="grade" defaultValue={ selectedStudent.firstName } />
+                    </label>
+
+                    <label>
+                        First Name:
+                        <input type="text" name="firstName" defaultValue={ selectedStudent.firstName } />
+                    </label>
+                    </form>}
             </div>
         </div>
     )
 }
+
+export default Students;

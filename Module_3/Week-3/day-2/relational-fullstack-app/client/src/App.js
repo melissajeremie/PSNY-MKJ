@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Students from /components/Students;
+import Students from './components/Students';
 import './App.css';
 
 function App() {
